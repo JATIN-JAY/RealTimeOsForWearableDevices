@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTOS for Wearable Devices</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>RTOS Simulator for Wearables</h1>
+    <div>
+        <div>
+            <p id="currentTime">Time: --:--:--</p>
+        </div>
+        <div>
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        <div>
+            <div>
+                <h2>Task Scheduler</h2>
+                <ul id="taskList"></ul>
+            </div>
+            <div>
+                <h2>Live Sensor Data</h2>
+                <p>Heart Rate: <span id="heartRate">--</span> BPM</p>
+                <p>Step Count: <span id="stepCount">--</span></p>
+                <p>Temperature: <span id="temperature">--</span> °C</p>
+                <p>Battery Consumption: <span id="battery">100%</span></p>
+            </div>
+        </div>
+        <div>
+            <div>
+                <h2>Heart Rate</h2>
+                <canvas id="heartRateChart"></canvas>
+            </div>
+            <div>
+                <h2>Step Count</h2>
+                <canvas id="stepCountChart"></canvas>
+            </div>
+            <div>
+                <h2>Temperature</h2>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
