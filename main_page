@@ -23,7 +23,210 @@
             <div>
                 <h2>Task Scheduler</h2>
                 <ul id="taskList"></ul>
+            </div><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTOS for Wearable Devices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  
+    <script defer src="time.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="toogle.css">
+</head>
+
+
+<body class="bg-gray-900 text-white p-5">
+    <h1 class="text-4xl font-bold text-center mt-8 text-blue-400 drop-shadow-lg">RTOS Simulator for Wearables</h1>
+    <br>
+    <div class="container mx-auto">
+        <!-- Current Time Display -->
+        <div class="text-center text-2xl font-bold bg-gray-800 p-3 rounded-lg shadow-md">
+            <p id="currentTime">Time: --:--:--</p>
+ 
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="flex justify-center gap-6 mt-6">
+            <button onclick="startSimulation()" class="bg-green-500 hover:bg-green-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Start</button>
+            <button onclick="stopSimulation()" class="bg-yellow-500 hover:bg-yellow-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Stop</button>
+            <button onclick="resetSimulation()" class="bg-red-500 hover:bg-red-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Reset</button>
+        </div>
+
+        <!-- Title -->
+
+        <!-- Task Scheduler & Sensor Data -->
+        <div class="grid grid-cols-2 gap-6 mt-6">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-yellow-300">Task Scheduler</h2>
+                <ul id="taskList" class="mt-4 text-lg"></ul>
             </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-green-300">Live Sensor Data</h2>
+                <p class="mt-2">❤️ Heart Rate: <span id="heartRate" class="text-red-400">--</span> BPM</p>
+                <p>🏃 Step Count: <span id="stepCount" class="text-blue-400">--</span></p>
+                <p>🌡️ Temperature: <span id="temperature" class="text-yellow-400">--</span> °C</p>
+                <p>🔋 Battery Consumption: <span id="battery" class="text-green-400">100%</span></p>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="grid grid-cols-3 gap-6 mt-8">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-red-300">Heart Rate</h2>
+                <canvas id="heartRateChart"></canvas>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-blue-300">Step Count</h2>
+                <canvas id="stepCountChart"></canvas>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-green-300">Temperature</h2>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const taskList = document.getElementById('taskList');
+        const tasks = [
+            { name: 'Heartbeat Sensor', priority: 1, interval: 3000 },
+            { name: 'Step Counter', priority: 2, interval: 5000 },
+            { name: 'Temperature Monitor', priority: 3, interval: 7000 }
+        ];
+
+        function scheduleTasks() {
+    taskList.innerHTML = '';
+    tasks.sort((a, b) => a.priority - b.priority).forEach((task, index) => {
+        const li = document.createElement('li');
+        li.classList.add("flex", "justify-between", "items-center", "p-2");
+
+        const taskText = document.createElement('span');
+        taskText.innerText = `${task.name} (Executes every ${task.interval / 1000}s)`;
+
+        // Toggle Switch Container
+        const label = document.createElement('label');
+        label.classList.add("switch");
+
+        // Toggle Input
+        const toggle = document.createElement('input');
+        toggle.type = 'checkbox';
+        toggle.checked = true; // Default to enabled
+        toggle.id = `toggle-${index}`; // Unique ID for each toggle
+
+        // Toggle Slider
+        const slider = document.createElement('span');
+        slider.classList.add("slider", "round");
+
+        label.appendChild(toggle);
+        label.appendChild(slider);
+
+        li.appendChild(taskText);
+        li.appendChild(label);
+        taskList.appendChild(li);
+    });
+}
+
+scheduleTasks();
+
+
+
+        let batteryLevel = 100;
+        function updateBattery() {
+            if (batteryLevel > 0) batteryLevel -= 0.5;
+            document.getElementById('battery').innerText = batteryLevel.toFixed(1) + '%';
+        }
+        setInterval(updateBattery, 5000);
+
+        const heartRateCtx = document.getElementById('heartRateChart').getContext('2d');
+        const stepCountCtx = document.getElementById('stepCountChart').getContext('2d');
+        const temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+
+        const heartRateChart = new Chart(heartRateCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Heart Rate', data: [], borderColor: 'red', fill: false }] },
+            options: { responsive: true }
+        });
+
+        const stepCountChart = new Chart(stepCountCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Step Count', data: [], borderColor: 'blue', fill: false }] },
+            options: { responsive: true }
+        });
+
+        const temperatureChart = new Chart(temperatureCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Temperature', data: [], borderColor: 'green', fill: false }] },
+            options: { responsive: true }
+        });
+
+        function updateSensors() {
+    // Get toggle elements
+    const heartRateToggle = document.getElementById('toggle-0');
+    const stepCountToggle = document.getElementById('toggle-1');
+    const temperatureToggle = document.getElementById('toggle-2');
+
+    if (heartRateToggle && heartRateToggle.checked) {
+        const heartRate = Math.floor(Math.random() * (100 - 60) + 60);
+        document.getElementById('heartRate').innerText = heartRate;
+
+        heartRateChart.data.labels.push(`${heartRateChart.data.labels.length * 2}s`);
+        heartRateChart.data.datasets[0].data.push(heartRate);
+        heartRateChart.update();
+    }
+
+    if (stepCountToggle && stepCountToggle.checked) {
+        const stepCount = Math.floor(Math.random() * 5000 + 1000);
+        document.getElementById('stepCount').innerText = stepCount;
+
+        stepCountChart.data.labels.push(`${stepCountChart.data.labels.length * 2}s`);
+        stepCountChart.data.datasets[0].data.push(stepCount);
+        stepCountChart.update();
+    }
+
+    if (temperatureToggle && temperatureToggle.checked) {
+        const temperature = (Math.random() * (38 - 35) + 35).toFixed(1);
+        document.getElementById('temperature').innerText = temperature;
+
+        temperatureChart.data.labels.push(`${temperatureChart.data.labels.length * 2}s`);
+        temperatureChart.data.datasets[0].data.push(temperature);
+        temperatureChart.update();
+    }
+}
+
+
+        let sensorInterval;
+        function startSimulation() {
+            if (!sensorInterval) {
+                sensorInterval = setInterval(updateSensors, 3000);
+            }
+        }
+
+        function stopSimulation() {
+            clearInterval(sensorInterval);
+            sensorInterval = null;
+        }
+
+        function resetSimulation() {
+            stopSimulation();
+            document.getElementById('heartRate').innerText = '--';
+            document.getElementById('stepCount').innerText = '--';
+            document.getElementById('temperature').innerText = '--';
+            document.getElementById('battery').innerText = '100%';
+            batteryLevel = 100;
+
+            [heartRateChart, stepCountChart, temperatureChart].forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+            });
+        }
+    </script>
+</body>
+</html>
+
             <div>
                 <h2>Live Sensor Data</h2>
                 <p>Heart Rate: <span id="heartRate">--</span> BPM</p>
