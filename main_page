@@ -11,9 +11,10 @@
 <body>
     <h1>RTOS Simulator for Wearables</h1>
     <div>
-        <div>
-            <p id="currentTime">Time: --:--:--</p>
-        </div>
+        <div id="timeDisplay" class="text-lg font-bold">
+        Time: --:--:-- <br>
+        Date: --/--/----
+    </div>
         <div>
             <button id="startBtn">Start</button>
             <button id="stopBtn">Stop</button>
