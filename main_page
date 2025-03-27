@@ -15,6 +15,14 @@
         Time: --:--:-- <br>
         Date: --/--/----
     </div>
+    <div class="flex justify-end mb-4">
+            <label for="modeToggle" class="flex items-center cursor-pointer">
+                <span id="modeEmoji" class="text-lg">🌙</span> <!-- Emoji span -->
+                <input type="checkbox" id="modeToggle" class="hidden" onchange="toggleMode()">
+                <div class="toggle-bg rounded-full shadow-inner bg-gray-400"></div>
+                <div class="toggle-dot rounded-full bg-white shadow absolute transition-transform duration-300 transform" id="toggleDot"></div>
+            </label>
+        </div>
         <div>
             <button id="startBtn">Start</button>
             <button id="stopBtn">Stop</button>
