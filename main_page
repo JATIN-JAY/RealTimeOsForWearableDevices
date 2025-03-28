@@ -63,6 +63,12 @@
             <button onclick="stopSimulation()" class="bg-yellow-500 hover:bg-yellow-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Stop</button>
             <button onclick="resetSimulation()" class="bg-red-500 hover:bg-red-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Reset</button>
         </div>
+        <div class="text-center mt-4">
+            <button id="syncWatchBtn" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg shadow-md">
+                🔄 Sync Watch & Fetch Data
+            </button>
+        </div>
+
 
         <!-- Title -->
 
