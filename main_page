@@ -19,23 +19,72 @@
             border-radius: 5px;
             z-index: 1000; /* Ensure it stays on top */
         }
+        /* Light mode styles */
+        .light-mode {
+            background-color: #f9fafb; /* Light gray background */
+            color: #1f2937; /* Dark gray text */
+        }
+        .light-mode .bg-gray-800 {
+            background-color: #e5e7eb; /* Light gray for cards */
+        }
+        .light-mode .bg-blue-500 {
+            background-color: #3b82f6; /* Blue button */
+        }
+        .light-mode .bg-green-500 {
+            background-color: #22c55e; /* Green button */
+        }
+        .light-mode .bg-yellow-500 {
+            background-color: #facc15; /* Yellow button */
+        }
+        .light-mode .bg-red-500 {
+            background-color: #ef4444; /* Red button */
+        }
+        .light-mode .bg-blue-400 {
+            background-color: #60a5fa; /* Light blue text */
+        }
+        .light-mode .bg-red-300 {
+            background-color: #fca5a1; /* Light red text */
+        }
+        .light-mode .bg-green-300 {
+            background-color: #86efac; /* Light green text */
+        }
+        .light-mode .bg-yellow-300 {
+            background-color: #fbbf24; /* Light yellow text */
+        }
+        /* Hover effect for charts */
+        .chart-container {
+            transition: transform 0.3s ease;
+        }
+        .chart-container:hover {
+            transform: scale(1.05); /* Scale up the chart on hover */
+        }
     </style>
 </head>
 
-<body class="bg-gray-900 text-white p-5">
+<body class="bg-gray-900 text-white p-5" id="body">
     <div id="timeDisplay" class="text-lg font-bold">
         Time: --:--:-- <br>
         Date: --/--/----
     </div>
 
-    <h1 class="text-4xl font-bold text-center mt-8 text-blue-400 drop-shadow-lg">RTOS Simulator for Wearables</h1>
+    <h1 class="text-5xl font-extrabold text-center mt-8 text-blue-400 drop-shadow-lg">RTOS Simulator for Wearables</h1>
     <br>
     <div class="container mx-auto">
+        <!-- Dark/Light Mode Toggle -->
+        <div class="flex justify-end mb-4">
+            <label for="modeToggle" class="flex items-center cursor-pointer">
+                <span id="modeEmoji" class="text-lg">🌙</span> <!-- Emoji span -->
+                <input type="checkbox" id="modeToggle" class="hidden" onchange="toggleMode()">
+                <div class="toggle-bg rounded-full shadow-inner bg-gray-400"></div>
+                <div class="toggle-dot rounded-full bg-white shadow absolute transition-transform duration-300 transform" id="toggleDot"></div>
+            </label>
+        </div>
+
         <!-- Control Buttons -->
         <div class="flex justify-center gap-6 mt-6">
-            <button onclick="startSimulation()" class="bg-green-500 hover:bg-green-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Start</button>
-            <button onclick="stopSimulation()" class="bg-yellow-500 hover:bg-yellow-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Stop</button>
-            <button onclick="resetSimulation()" class="bg-red-500 hover:bg-red-600 transition px-6 py-2 rounded-lg text-lg font-semibold shadow-md">Reset</button>
+            <button onclick="startSimulation()" class="bg-green-500 hover:bg-green-600 transition-all duration-300 transform rounded-full px-6 py-3 text-lg font-semibold shadow-md hover:scale-110">Start</button>
+            <button onclick="stopSimulation()" class="bg-yellow-500 hover:bg-yellow-600 transition-all duration-300 transform rounded-full px-6 py-3 text-lg font-semibold shadow-md hover:scale-110">Stop</button>
+            <button onclick="resetSimulation()" class="bg-red-500 hover:bg-red-600 transition-all duration-300 transform rounded-full px-6 py-3 text-lg font-semibold shadow-md hover:scale-110">Reset</button>
         </div>
         <div class="text-center mt-4">
             <button id="syncWatchBtn" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg shadow-md">
@@ -44,33 +93,38 @@
         </div>
 
         <!-- Performance Charts -->
-        <div class="mt-8">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="chart-container bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
                 <h2 class="text-2xl font-semibold text-red-300">Heart Rate</h2>
                 <canvas id="heartRateChart"></canvas>
             </div>
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <div class="chart-container bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
                 <h2 class="text-2xl font-semibold text-blue-300">Step Count</h2>
                 <canvas id="stepCountChart"></canvas>
             </div>
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+            <div class="chart-container bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
                 <h2 class="text-2xl font-semibold text-green-300">Temperature</h2>
                 <canvas id="temperatureChart"></canvas>
             </div>
         </div>
 
         <!-- Task Scheduler & Sensor Data -->
-        <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold text-yellow-300">Task Scheduler</h2>
-                <ul id="taskList" class="mt-4 text-lg"></ul>
+                <ul id="taskList" class="mt-4 text-lg">
+                    <li class="font-bold text-yellow-400">Heartbeat Sensor (Executes every 3s)</li>
+                    <li class="font-bold text-yellow-400">Step Counter (Executes every 5s)</li>
+                    <li class="font-bold text-yellow-400">Temperature Monitor (Executes every 7s)</li>
+                </ul>
             </div>
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold text-green-300">Live Sensor Data</h2>
-                <p class="mt-2">❤️ Heart Rate: <span id="heartRate" class="text-red-400">--</span> BPM</p>
-                <p>🏃 Step Count: <span id="stepCount" class="text-blue-400">--</span></p>
-                <p>🌡️ Temperature: <span id="temperature" class="text-yellow-400">--</span> °C</p>
-                <p>🔋 Battery Consumption: <span id="battery" class="text-green-400">100%</span></p>
+                <p class="mt-2 font-bold text-green-400">❤️ Heart Rate: <span id="heartRate" class="text-red-400">--</span> BPM</p>
+                <p class="font-bold text-green-400">🏃 Step Count: <span id="stepCount" class="text-blue-400">--</span></p>
+                <p class="font-bold text-green-400">🏃 Total Steps Today: - <span id="totalStepCount" class="text-blue-400">--</span></p>
+                <p class="font-bold text-green-400">🌡️ Temperature: <span id="temperature" class="text-yellow-400">--</span> °C</p>
+                <p class="font-bold text-green-400">🔋 Battery Consumption: <span id="battery" class="text-green-400">100%</span></p>
             </div>
         </div>
     </div>
@@ -220,6 +274,26 @@
                 chart.data.datasets[0].data = [];
                 chart.update();
             });
+        }
+
+        // Toggle between dark and light mode
+        function toggleMode() {
+            const body = document.getElementById('body');
+            const toggleDot = document.getElementById('toggleDot');
+            const modeToggle = document.getElementById('modeToggle');
+            const modeEmoji = document.getElementById('modeEmoji');
+
+            if (modeToggle.checked) {
+                body.classList.remove('bg-gray-900', 'text-white');
+                body.classList.add('light-mode');
+                toggleDot.style.transform = 'translateX(100%)'; // Move the toggle dot
+                modeEmoji.innerText = '☀️'; // Change emoji to sun
+            } else {
+                body.classList.add('bg-gray-900', 'text-white');
+                body.classList.remove('light-mode');
+                toggleDot.style.transform = 'translateX(0)'; // Move the toggle dot back
+                modeEmoji.innerText = '🌙'; // Change emoji to moon
+            }
         }
     </script>
     <script defer src="google_fit.js"></script>    
